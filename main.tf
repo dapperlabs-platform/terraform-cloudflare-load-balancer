@@ -1,5 +1,5 @@
 # Health monitors — one resource per entry in var.monitors
-resource "cloudflare_load_balancer_monitor" "this" {
+resource "cloudflare_load_balancer_monitor" "monitor" {
   for_each = var.monitors
 
   account_id  = var.account_id
@@ -29,7 +29,7 @@ resource "cloudflare_load_balancer_monitor" "this" {
 }
 
 # One pool per entry in var.pools (e.g. one per cluster region)
-resource "cloudflare_load_balancer_pool" "this" {
+resource "cloudflare_load_balancer_pool" "pool" {
   for_each = var.pools
 
   account_id      = var.account_id
@@ -37,7 +37,7 @@ resource "cloudflare_load_balancer_pool" "this" {
   description     = each.value.description
   enabled         = each.value.enabled
   minimum_origins = each.value.minimum_origins
-  monitor         = cloudflare_load_balancer_monitor.this[each.value.monitor_key].id
+  monitor         = cloudflare_load_balancer_monitor.monitor[each.value.monitor_key].id
   latitude        = each.value.latitude
   longitude       = each.value.longitude
 
@@ -53,7 +53,7 @@ resource "cloudflare_load_balancer_pool" "this" {
 }
 
 # One load balancer per hostname — each shares the same pool configuration
-resource "cloudflare_load_balancer" "this" {
+resource "cloudflare_load_balancer" "load_balancer" {
   for_each = toset(var.hostnames)
 
   zone_id          = var.zone_id
@@ -64,14 +64,14 @@ resource "cloudflare_load_balancer" "this" {
   steering_policy  = var.steering_policy
   session_affinity = var.session_affinity
 
-  default_pool_ids = [for k in var.default_pool_keys : cloudflare_load_balancer_pool.this[k].id]
-  fallback_pool_id = cloudflare_load_balancer_pool.this[var.fallback_pool_key].id
+  default_pool_ids = [for k in var.default_pool_keys : cloudflare_load_balancer_pool.pool[k].id]
+  fallback_pool_id = cloudflare_load_balancer_pool.pool[var.fallback_pool_key].id
 
   dynamic "region_pools" {
     for_each = var.region_pools
     content {
       region   = region_pools.value.region
-      pool_ids = [for k in region_pools.value.pool_keys : cloudflare_load_balancer_pool.this[k].id]
+      pool_ids = [for k in region_pools.value.pool_keys : cloudflare_load_balancer_pool.pool[k].id]
     }
   }
 
@@ -79,7 +79,7 @@ resource "cloudflare_load_balancer" "this" {
     for_each = var.pop_pools
     content {
       pop      = pop_pools.value.pop
-      pool_ids = [for k in pop_pools.value.pool_keys : cloudflare_load_balancer_pool.this[k].id]
+      pool_ids = [for k in pop_pools.value.pool_keys : cloudflare_load_balancer_pool.pool[k].id]
     }
   }
 
@@ -87,7 +87,7 @@ resource "cloudflare_load_balancer" "this" {
     for_each = var.country_pools
     content {
       country  = country_pools.value.country
-      pool_ids = [for k in country_pools.value.pool_keys : cloudflare_load_balancer_pool.this[k].id]
+      pool_ids = [for k in country_pools.value.pool_keys : cloudflare_load_balancer_pool.pool[k].id]
     }
   }
 }
