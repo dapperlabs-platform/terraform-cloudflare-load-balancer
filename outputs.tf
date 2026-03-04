@@ -25,10 +25,3 @@ output "monitor_ids" {
     for key, monitor in cloudflare_load_balancer_monitor.this : key => monitor.id
   }
 }
-
-output "certificate_pack_ids" {
-  description = "Map of hostname to certificate pack ID"
-  value = {
-    for hostname, cert in cloudflare_certificate_pack.this : hostname => cert.id
-  }
-}

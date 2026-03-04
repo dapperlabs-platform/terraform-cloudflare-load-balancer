@@ -91,16 +91,3 @@ resource "cloudflare_load_balancer" "this" {
     }
   }
 }
-
-# Edge certificate per hostname — Cloudflare presents this cert to clients
-resource "cloudflare_certificate_pack" "this" {
-  for_each = toset(var.hostnames)
-
-  zone_id               = var.zone_id
-  type                  = "advanced"
-  validation_method     = "txt"
-  validity_days         = 90
-  certificate_authority = var.certificate_authority
-  cloudflare_branding   = false
-  hosts                 = [each.value]
-}

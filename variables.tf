@@ -132,13 +132,3 @@ variable "description" {
   type        = string
   default     = ""
 }
-
-variable "certificate_authority" {
-  description = "Certificate authority for edge certificate packs. One of: google, lets_encrypt, ssl_com"
-  type        = string
-  default     = "lets_encrypt"
-  validation {
-    condition     = contains(["google", "lets_encrypt", "ssl_com"], var.certificate_authority)
-    error_message = "certificate_authority must be one of: google, lets_encrypt, ssl_com"
-  }
-}
