@@ -1,3 +1,9 @@
+variable "enabled" {
+  description = "When false, all load balancer resources (monitors, pools, LB) are destroyed."
+  type        = bool
+  default     = true
+}
+
 variable "account_id" {
   description = "Cloudflare account ID"
   type        = string
