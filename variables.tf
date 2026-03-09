@@ -1,5 +1,5 @@
 variable "enabled" {
-  description = "When false, all load balancer resources (monitors, pools, LB) are destroyed."
+  description = "Whether the load balancer is enabled and serving traffic."
   type        = bool
   default     = true
 }

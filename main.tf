@@ -1,6 +1,6 @@
 # Health monitors — one resource per entry in var.monitors
 resource "cloudflare_load_balancer_monitor" "monitor" {
-  for_each = var.enabled ? var.monitors : {}
+  for_each = var.monitors
 
   account_id  = var.account_id
   type        = each.value.type
@@ -54,11 +54,12 @@ resource "cloudflare_load_balancer_pool" "pool" {
 
 # One load balancer per hostname — each shares the same pool configuration
 resource "cloudflare_load_balancer" "load_balancer" {
-  for_each = var.enabled ? toset(var.hostnames) : toset([])
+  for_each = toset(var.hostnames)
 
   zone_id          = var.zone_id
   name             = each.value
   description      = var.description
+  enabled          = var.enabled
   proxied          = var.proxied
   ttl              = var.proxied ? null : var.ttl
   steering_policy  = var.steering_policy
