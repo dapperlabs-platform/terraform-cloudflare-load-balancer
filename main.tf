@@ -48,6 +48,14 @@ resource "cloudflare_load_balancer_pool" "pool" {
       address = origins.value.address
       weight  = origins.value.weight
       enabled = origins.value.enabled
+
+      dynamic "header" {
+        for_each = origins.value.header
+        content {
+          header = header.key
+          values = header.value
+        }
+      }
     }
   }
 }

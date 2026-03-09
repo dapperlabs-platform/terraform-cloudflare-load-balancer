@@ -32,6 +32,7 @@ variable "pools" {
       address = string
       weight  = optional(number, 1)
       enabled = optional(bool, true)
+      header  = optional(map(list(string)), {})
     }))
     description     = optional(string, "")
     enabled         = optional(bool, true)
